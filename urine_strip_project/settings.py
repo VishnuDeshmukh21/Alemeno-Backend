@@ -122,3 +122,9 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
+
+# api/settings.py
+WSGI_APPLICATION = 'api.wsgi.app'
