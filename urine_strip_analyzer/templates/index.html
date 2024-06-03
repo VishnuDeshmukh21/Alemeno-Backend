@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Urine Strip Analyzer</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #upload-form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+        #results {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+        .color-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            color: #fff;
+        }
+        .custom-file-input:lang(en) ~ .custom-file-label::after {
+            content: "Browse";
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="my-4">Urine Strip Analyzer</h1>
+    <form id="upload-form" enctype="multipart/form-data" class="animated fadeIn">
+        <div class="form-group">
+            <div class="custom-file">
+                <input type="file" id="image" name="image" class="custom-file-input" accept="image/*" required>
+                <label class="custom-file-label" for="image">Choose file</label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Upload</button>
+    </form>
+    <div id="results" class="mt-4"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Show selected file name
+    $(".custom-file-input").on("change", function() {
+        var fileName = $(this).val().split("\\").pop();
+        $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    document.getElementById('upload-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData();
+        formData.append('image', document.getElementById('image').files[0]);
+
+        fetch('/urine_strip_analyzer/analyze/', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<h3 class="animated fadeIn">Analysis Results</h3>';
+            for (const [label, color] of Object.entries(data)) {
+                const colorDiv = document.createElement('div');
+                colorDiv.classList.add('color-box', 'animated', 'fadeIn');
+                colorDiv.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+                colorDiv.innerText = `${label}: rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+                resultsDiv.appendChild(colorDiv);
+            }
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="alert alert-danger animated fadeIn">An error occurred while analyzing the image.</div>';
+        });
+    });
+</script>
+</body>
+</html>
