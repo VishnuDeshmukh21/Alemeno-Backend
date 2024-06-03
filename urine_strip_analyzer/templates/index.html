@@ -80,7 +80,7 @@
         const formData = new FormData();
         formData.append('image', document.getElementById('image').files[0]);
 
-        fetch('/urine_strip_analyzer/analyze/', {
+        fetch('/analyze/', {
             method: 'POST',
             body: formData
         })
