@@ -61,6 +61,7 @@
                 <label class="custom-file-label" for="image">Choose file</label>
             </div>
         </div>
+        
         <button type="submit" class="btn btn-primary btn-block">Upload</button>
     </form>
     <div id="results" class="mt-4"></div>
@@ -84,19 +85,21 @@
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '<h3 class="animated fadeIn">Analysis Results</h3>';
-            for (const [label, color] of Object.entries(data)) {
-                const colorDiv = document.createElement('div');
-                colorDiv.classList.add('color-box', 'animated', 'fadeIn');
-                colorDiv.style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
-                colorDiv.innerText = `${label}: rgb(${color[0]}, ${color[1]}, ${color[2]})`;
-                resultsDiv.appendChild(colorDiv);
-            }
-            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        .then(response => {
+                return response.text(); // Return JSON data
+            
         })
+        .then(data => {
+           
+                // HTML data
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = '<h3 class="animated fadeIn">Analysis Results</h3>' + data; // Display HTML results
+                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+            
+        })
+        
+        
+        
         .catch(error => {
             console.error('Error:', error);
             const resultsDiv = document.getElementById('results');
